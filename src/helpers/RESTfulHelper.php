@@ -9,27 +9,27 @@ namespace shopack\base\backend\helpers;
 
 class RESTfulHelper
 {
-  static function queryAllToResponse(
-    $query,
-    $pageIndex,
-    $pageSize
-  ) {
-    $rows = $query->all();
-		$totalCount = $query->count();
+  // static function queryAllToResponse(
+  //   $query,
+  //   $pageIndex,
+  //   $pageSize
+  // ) {
+  //   $rows = $query->all();
+	// 	$totalCount = $query->count();
 
-		return [
-			'totalCount' => $totalCount,
-			'rows' => $rows,
-      'pageIndex' => $pageIndex,
-      'pageSize' => $pageSize,
-		];
-  }
+	// 	return [
+	// 		'totalCount' => $totalCount,
+	// 		'rows' => $rows,
+  //     'pageIndex' => $pageIndex,
+  //     'pageSize' => $pageSize,
+	// 	];
+  // }
 
-  static function modelToResponse($model)
-  {
-    return [
-      'data' => $model,
-    ];
-  }
+  // static function modelToResponse($model)
+  // {
+  //   return [
+  //     'data' => $model,
+  //   ];
+  // }
 
 }

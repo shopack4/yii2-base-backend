@@ -14,7 +14,20 @@ class JwtHttpBearerAuth extends BaseJwtHttpBearerAuth
 	{
 		$token = $this->getJwtComponent()->parse($data);
 
-		$this->getJwtComponent()->assert($token);
+		try
+		{
+			$this->getJwtComponent()->assert($token);
+		}
+		catch (\Throwable $th)
+		{
+			$rememberMe = $token->claims()->get('rmmbr');
+
+			if ($rememberMe) {
+
+			}
+
+			throw $th;
+		}
 
 		return $token;
 	}

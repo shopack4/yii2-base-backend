@@ -21,10 +21,10 @@ use shopack\aaa\common\enums\enuSessionStatus;
 
 class AuthHelper
 {
-  const PHRASETYPE_EMAIL = 'E';
+  const PHRASETYPE_EMAIL  = 'E';
   const PHRASETYPE_MOBILE = 'M';
-  const PHRASETYPE_SSID = 'S';
-  const PHRASETYPE_NONE = 'N';
+  const PHRASETYPE_SSID   = 'S';
+  const PHRASETYPE_NONE   = 'N';
 
   static function isEmail($email)
   {
@@ -79,7 +79,7 @@ class AuthHelper
     return [$normalizedInput, $type];
   }
 
-  static function doLogin($user, $additionalInfo = [])
+  static function doLogin($user, bool $rememberMe = false, ?Array $additionalInfo = [])
   {
     //create session
     //-----------------------
@@ -92,12 +92,12 @@ class AuthHelper
     //-----------------------
     $privs = [];
 
-    if ($user->usrStatus != enuUserStatus::NEW_FOR_LOGIN_BY_MOBILE) {
+    if ($user->usrStatus != enuUserStatus::NewForLoginByMobile) {
       if ((empty($user->usrEmail) == false && empty($user->usrEmailApprovedAt))
         || (empty($user->usrMobile) == false && empty($user->usrMobileApprovedAt))
       ) {
         //set to user role until signup email or mobile approved
-        $role = RoleModel::findOne(['rolID' => enuRole::USER]);
+        $role = RoleModel::findOne(['rolID' => enuRole::User]);
         if (empty($role->rolPrivs) == false)
           $privs = $role->rolPrivs;
       } else {
@@ -134,6 +134,9 @@ class AuthHelper
       // ->withClaim('lastName', $model->user->usrLastName)
     ;
 
+    if ($rememberMe)
+      $token->withClaim('rmmbr', 1);
+
     if (empty($additionalInfo) == false) {
       foreach ($additionalInfo as $k => $v) {
         $token->withClaim($k, $v);
@@ -141,7 +144,7 @@ class AuthHelper
     }
 
     $mustApprove = [];
-    if ($user->usrStatus != enuUserStatus::NEW_FOR_LOGIN_BY_MOBILE) {
+    if ($user->usrStatus != enuUserStatus::NewForLoginByMobile) {
       if (empty($user->usrEmail) == false && empty($user->usrEmailApprovedAt))
         $mustApprove[] = 'email';
       if (empty($user->usrMobile) == false && empty($user->usrMobileApprovedAt))
@@ -160,9 +163,9 @@ class AuthHelper
     //update session
     //-----------------------
     $sessionModel->ssnJWT = $token;
-    $sessionModel->ssnStatus = ($user->usrStatus == enuUserStatus::NEW_FOR_LOGIN_BY_MOBILE
-      ? enuSessionStatus::FOR_LOGIN_BY_MOBILE
-      : enuSessionStatus::ACTIVE);
+    $sessionModel->ssnStatus = ($user->usrStatus == enuUserStatus::NewForLoginByMobile
+      ? enuSessionStatus::ForLoginByMobile
+      : enuSessionStatus::Active);
     $sessionModel->ssnExpireAt = $expire->format('Y-m-d H:i:s');
     $sessionModel->save();
 
