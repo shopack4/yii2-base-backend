@@ -9,6 +9,48 @@ use Yii;
 
 class RestServerQuery extends \yii\db\ActiveQuery
 {
+  public function prepare($builder)
+  {
+    $modelClass = $this->modelClass;
+    $model = $modelClass::instance();
+
+    $statusColumnName = $model->getStatusColumnName();
+		if ($statusColumnName) {
+      $pkCount = 0;
+      $pkFound = 0;
+      $statusFound = false;
+
+      if (empty($this->where) == false) {
+        $db = $modelClass::getDb();
+        $params = [];
+        $where = $db->getQueryBuilder()->buildCondition($this->where, $params);
+
+        if (strpos($where, $statusColumnName) === false) {
+          $pks = $modelClass::primaryKey();
+          if (empty($pks) == false) {
+            $pks = (array)$pks;
+
+            $pkCount = count($pks);
+            $pkFound = 0;
+
+            foreach ($pks as $pk) {
+              if (strpos($where, $pk) !== false)
+                ++$pkFound;
+            }
+          }
+        } else {
+          $statusFound = true;
+        }
+      }
+
+      if (($statusFound == false) && (($pkFound == 0) || ($pkFound < $pkCount)))
+        $this->andWhere(['!=', $statusColumnName, 'R']); //::Removed
+		}
+
+    $query = parent::prepare($builder);
+    return $query;
+  }
+
   public function addFileUrl($fullFileUrlParamName, $fileRelationName = null)
   {
     if (empty($fileRelationName) == false) {

@@ -81,6 +81,11 @@ class AuthHelper
 
   static function doLogin($user, bool $rememberMe = false, ?Array $additionalInfo = [])
   {
+    if ($user->usrStatus == enuUserStatus::NewForLoginByMobile) {
+      $user->usrStatus = enuUserStatus::Active;
+      $user->save();
+    }
+
     //create session
     //-----------------------
     $sessionModel = new SessionModel();

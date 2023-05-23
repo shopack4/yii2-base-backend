@@ -70,14 +70,14 @@ class BaseBasketController extends BaseRestController
 	/**
 	 * update a prevoucher item
 	 */
-	public function actionUpdate($uuid)
+	public function actionUpdate($key)
 	{
 	}
 
 	/**
 	 * remove an item from prevoucher
 	 */
-	public function actionDelete($uuid)
+	public function actionDelete($key)
 	{
 	}
 
